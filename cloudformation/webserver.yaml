@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Simple EC2 Web Server Stack (CloudFormation)
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.micro
+
+
+Resources:
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and HTTP access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: ami-0c7217cdde317cfec   # Amazon Linux 2 AMI in us-east-1
+      SecurityGroupIds:
+        - !Ref WebSecurityGroup
+
+Outputs:
+  InstanceId:
+    Value: !Ref WebInstance
+    Description: EC2 Instance ID
