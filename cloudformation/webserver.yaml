@@ -4,7 +4,7 @@ Description: Simple EC2 Web Server Stack (CloudFormation)
 Parameters:
   InstanceType:
     Type: String
-    Default: t3.micro
+    Default: t2.micro
 
 
 Resources:
