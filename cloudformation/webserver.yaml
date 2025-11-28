@@ -7,21 +7,20 @@ Parameters:
     Default: t2.micro
 
 Resources:
+
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow SSH, HTTP, and HTTPS access
+      GroupDescription: Allow SSH and HTTP access
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
-
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
@@ -31,11 +30,18 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType
-      ImageId: ami-0c7217cdde317cfec   # Amazon Linux 2 AMI for us-east-1
+      ImageId: ami-0c7217cdde317cfec  # Amazon Linux 2 AMI (us-east-1)
       SecurityGroupIds:
         - !Ref WebSecurityGroup
+
+  # ------------------------------------------------------------------------
+  # BAD RESOURCE (INTENTIONALLY BROKEN FOR ROLLBACK TEST)
+  # This subnet does NOT exist → stack update will FAIL → CloudFormation
+  # will trigger UPDATE_ROLLBACK_IN_PROGRESS automatically.
+  # ------------------------------------------------------------------------
 
 Outputs:
   InstanceId:
     Value: !Ref WebInstance
     Description: EC2 Instance ID
+
