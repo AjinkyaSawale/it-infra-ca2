@@ -1,17 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Simple EC2 Web Server Stack (CloudFormation)
-
-Parameters:
-  InstanceType:
-    Type: String
-    Default: t2.micro
+Description: WebServer with forced instance replacement for Change Set Test
 
 Resources:
-
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow SSH and HTTP access
+      GroupDescription: Allow SSH and HTTP
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -21,27 +15,14 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
 
   WebInstance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: !Ref InstanceType
-      ImageId: ami-0c7217cdde317cfec  # Amazon Linux 2 AMI (us-east-1)
+      InstanceType: t3.large   # <-- UPDATED (forces replacement)
+      ImageId: ami-0c7217cdde317cfec
       SecurityGroupIds:
         - !Ref WebSecurityGroup
-
-  # ------------------------------------------------------------------------
-  # BAD RESOURCE (INTENTIONALLY BROKEN FOR ROLLBACK TEST)
-  # This subnet does NOT exist → stack update will FAIL → CloudFormation
-  # will trigger UPDATE_ROLLBACK_IN_PROGRESS automatically.
-  # ------------------------------------------------------------------------
-
-Outputs:
-  InstanceId:
-    Value: !Ref WebInstance
-    Description: EC2 Instance ID
-
+      Tags:
+        - Key: Name
+          Value: cfn-webserver-ec2
