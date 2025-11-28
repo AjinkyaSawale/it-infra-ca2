@@ -15,5 +15,5 @@ provider "aws" {
 
 module "webserver" {
   source        = "./modules/webserver"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
 }
