@@ -13,27 +13,29 @@ provider "aws" {
 }
 
 ########################################
-# BASE VPC + PUBLIC SUBNET (VERSION A)
+# VPC + PUBLIC SUBNET (VERSION B)
+# - Changed CIDR from 10.0.0.0/16 → 10.1.0.0/16
+# - Changed subnet from 10.0.1.0/24 → 10.1.1.0/24
 ########################################
 
 resource "aws_vpc" "ca2_vpc" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "10.1.0.0/16"     # CHANGED
   enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
-    Name = "ca2-tf-vpc-a"
+    Name = "ca2-tf-vpc-b"
   }
 }
 
 resource "aws_subnet" "ca2_subnet_a" {
   vpc_id                  = aws_vpc.ca2_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.1.1.0/24"  # CHANGED
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "ca2-tf-subnet-a"
+    Name = "ca2-tf-subnet-b"
   }
 }
 
