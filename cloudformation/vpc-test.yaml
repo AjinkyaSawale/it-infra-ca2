@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CA2 - VPC Replacement Test"
+
+Parameters:
+  VpcCidr:
+    Type: String
+    Default: 10.10.0.0/16
+
+Resources:
+
+  TestVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: CA2-VPC-Test
+
+  TestSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref TestVPC
+      CidrBlock: 10.10.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: CA2-Subnet-Test
+
+  TestSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Test SG
+      VpcId: !Ref TestVPC
+      Tags:
+        - Key: Name
+          Value: CA2-SG-Test
+
+  TestInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0c7217cdde317cfec
+      SubnetId: !Ref TestSubnet
+      SecurityGroupIds:
+        - !Ref TestSG
+      Tags:
+        - Key: Name
+          Value: CA2-VPC-Test-Instance
