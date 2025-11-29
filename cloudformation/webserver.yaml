@@ -1,11 +1,18 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: WebServer with forced instance replacement for Change Set Test
+Description: Simple EC2 Web Server Stack (CloudFormation) - Network Update Test
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    Description: EC2 instance type
 
 Resources:
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow SSH and HTTP
+      GroupDescription: Allow SSH and HTTP/HTTPS access
+      VpcId: vpc-03fd669e46c73d59b        # CA2 VPC ID (from your console)
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
@@ -15,14 +22,24 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
 
   WebInstance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t3.large   # <-- UPDATED (forces replacement)
-      ImageId: ami-0c7217cdde317cfec
+      InstanceType: !Ref InstanceType
+      ImageId: ami-0c7217cdde317cfec        # Amazon Linux 2 AMI in us-east-1
+      SubnetId: subnet-07a897926851035db    # UPDATED: CA2-Subnet-B
       SecurityGroupIds:
         - !Ref WebSecurityGroup
       Tags:
         - Key: Name
-          Value: cfn-webserver-ec2
+          Value: cfn-webserver-ec2-instance
+
+Outputs:
+  InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref WebInstance
